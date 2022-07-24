@@ -8,7 +8,7 @@
 
     foreach(var item in category.OrderBy(x=>x.Title))
     {
-        string link = $"challenge/{item.File}";
+        var link = $"challenge?{item.File}";
         <MudLink Color="Color.Inherit" Href="@link">@item.Title</MudLink>
         <br/>
     }

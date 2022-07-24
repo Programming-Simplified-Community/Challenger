@@ -13,7 +13,7 @@
 
     @foreach(var challenge in _challengeItems.OrderBy(x=>x.Title))
     {
-        var href = $"Challenge/{challenge.File}";
+        var href = $"Challenge?{challenge.File}";
         <MudLink Href="@href" Typo="Typo.body2" Color="Color.Inherit">
             <b>@challenge.Title</b>
         </MudLink>

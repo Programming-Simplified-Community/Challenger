@@ -1,5 +1,6 @@
-﻿@page "/Challenge/{File}"
+﻿@page "/Challenge"
 @using Challenger.Services
+@inject NavigationManager _navManager
 @inject ChallengeService _challenges
 @inject IJSRuntime _js
 
@@ -11,15 +12,13 @@
 </MudContainer>
 
 @code {
-    [Parameter]
-    public string File{ get; set; }
-
     private MarkupString? _contents;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _contents = await _challenges.GetChallengeData(File);
+        var query = new Uri(_navManager.Uri).Query[1..];
+        _contents = await _challenges.GetChallengeData(query);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

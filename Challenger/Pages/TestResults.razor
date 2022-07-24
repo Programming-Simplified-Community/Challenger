@@ -1,8 +1,8 @@
 ﻿@page "/TestResults"
-@page "/TestResults/{EncodedReport}"
+
 @using Challenger.Models
 @using Challenger.Extensions
-
+@inject NavigationManager _navManager
 
 <MudText Typo="Typo.h4">
     <MudImage Style="border-radius: 50%; width: 64px; height: 64px;" Src="@_report.AvatarUrl"/>
@@ -75,8 +75,6 @@
 
 @code {
 
-    [Parameter]
-    public string? EncodedReport { get; set; }
     private ReportParameter _report;
     private bool _allPassed;
     private bool _allFailed;
@@ -113,12 +111,15 @@
     {
         base.OnInitialized();
 
-        EncodedReport ??= "eyJVc2VyTmFtZSI6IkJhZGdlciAyLTMiLCJBdmF0YXJVcmwiOiJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzExNzc0NDAzNDI0NzczNzM1My8yYzNhZTAyZjJiZWE4Yzg1MWVmZWIxNzNmMTg4ZWM5Ny5wbmc/c2l6ZT00MDk2IiwiUmVwb3J0Ijp7IklkIjowLCJQcm9ncmFtbWluZ0NoYWxsZW5nZUlkIjoxLCJQcm9ncmFtbWluZ0NoYWxsZW5nZSI6bnVsbCwiVXNlcklkIjpudWxsLCJVc2VyIjpudWxsLCJQb2ludHMiOjAsIkR1cmF0aW9uIjowLjAsIlRlc3RSZXN1bHRzIjpbeyJJZCI6MCwiUHJvZ3JhbW1pbmdDaGFsbGVuZ2VSZXBvcnRJZCI6MSwiTmFtZSI6InRlc3RfY29uc3RydWN0b3IiLCJEdXJhdGlvbiI6MC4wMDAyMjgxOTk5OTEzOTc1NTk2NCwiVG90YWxSdW5zIjoyLCJUb3RhbEZhaWxzIjoxLCJJbmNvbWluZ1ZhbHVlcyI6InRlc3RfZmlyc3QgPSAnQWRhbScsIHRlc3RfbGFzdCA9ICdUaG9tcHNvbicsIHRlc3RfYWdlID0gLTIwLCBleHBlY3RlZCA9IHsnYWdlJzogMjAsICdmaXJzdCc6ICdBZGFtJywgJ2xhc3QnOiAnVGhvbXBzb24nfSIsIkFzc2VydGlvbk1lc3NhZ2UiOiJhc3NlcnQgLTIwID09IDIwXG4gKyAgd2hlcmUgLTIwID0gPG1haW4uUGVyc29uIG9iamVjdCBhdCAweDAwMDAwMjRFOUY2MDAxMzA+LmFnZSIsIlJlc3VsdCI6MX0seyJJZCI6MCwiUHJvZ3JhbW1pbmdDaGFsbGVuZ2VSZXBvcnRJZCI6MSwiTmFtZSI6InRlc3Rfc3RyIiwiRHVyYXRpb24iOjAuMDA5MzAyNTUwMDEwMDMzODgzLCJUb3RhbFJ1bnMiOjIsIlRvdGFsRmFpbHMiOjEsIkluY29taW5nVmFsdWVzIjoidGVzdF9maXJzdCA9ICdBZGFtJywgdGVzdF9sYXN0ID0gJ1Rob21wc29uJywgdGVzdF9hZ2UgPSAtMjAsIGV4cGVjdGVkID0geydhZ2UnOiAyMCwgJ2ZpcnN0JzogJ0FkYW0nLCAnbGFzdCc6ICdUaG9tcHNvbid9IiwiQXNzZXJ0aW9uTWVzc2FnZSI6IkFzc2VydGlvbkVycm9yOiBhc3NlcnQgJ0ZpcnN0OiBBZGFtXFwuLi5zb25cXG5BZ2U6IC0yMCcgPT0gJ0ZpcnN0OiBBZGFtXFwuLi5wc29uXFxuQWdlOiAyMCdcbiAgICBGaXJzdDogQWRhbVxuICAgIExhc3Q6IFRob21wc29uXG4gIC0gQWdlOiAyMFxuICArIEFnZTogLTIwXG4gID8gICAgICArIiwiUmVzdWx0IjoxfSx7IklkIjowLCJQcm9ncmFtbWluZ0NoYWxsZW5nZVJlcG9ydElkIjoxLCJOYW1lIjoidGVzdF9wcm9wIiwiRHVyYXRpb24iOjAuMDAwMjEwODAwMDA0NDI0NTI3MywiVG90YWxSdW5zIjoxLCJUb3RhbEZhaWxzIjowLCJJbmNvbWluZ1ZhbHVlcyI6IiIsIkFzc2VydGlvbk1lc3NhZ2UiOiIiLCJSZXN1bHQiOjB9XX19";
+        var encodedReport = new Uri(_navManager.Uri).Query[1..];
+        
+        if(string.IsNullOrEmpty(encodedReport))
+            encodedReport ??= "eyJVc2VyTmFtZSI6IkJhZGdlciAyLTMiLCJBdmF0YXJVcmwiOiJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzExNzc0NDAzNDI0NzczNzM1My8yYzNhZTAyZjJiZWE4Yzg1MWVmZWIxNzNmMTg4ZWM5Ny5wbmc/c2l6ZT00MDk2IiwiUmVwb3J0Ijp7IklkIjowLCJQcm9ncmFtbWluZ0NoYWxsZW5nZUlkIjoxLCJQcm9ncmFtbWluZ0NoYWxsZW5nZSI6bnVsbCwiVXNlcklkIjpudWxsLCJVc2VyIjpudWxsLCJQb2ludHMiOjAsIkR1cmF0aW9uIjowLjAsIlRlc3RSZXN1bHRzIjpbeyJJZCI6MCwiUHJvZ3JhbW1pbmdDaGFsbGVuZ2VSZXBvcnRJZCI6MSwiTmFtZSI6InRlc3RfY29uc3RydWN0b3IiLCJEdXJhdGlvbiI6MC4wMDAyMjgxOTk5OTEzOTc1NTk2NCwiVG90YWxSdW5zIjoyLCJUb3RhbEZhaWxzIjoxLCJJbmNvbWluZ1ZhbHVlcyI6InRlc3RfZmlyc3QgPSAnQWRhbScsIHRlc3RfbGFzdCA9ICdUaG9tcHNvbicsIHRlc3RfYWdlID0gLTIwLCBleHBlY3RlZCA9IHsnYWdlJzogMjAsICdmaXJzdCc6ICdBZGFtJywgJ2xhc3QnOiAnVGhvbXBzb24nfSIsIkFzc2VydGlvbk1lc3NhZ2UiOiJhc3NlcnQgLTIwID09IDIwXG4gKyAgd2hlcmUgLTIwID0gPG1haW4uUGVyc29uIG9iamVjdCBhdCAweDAwMDAwMjRFOUY2MDAxMzA+LmFnZSIsIlJlc3VsdCI6MX0seyJJZCI6MCwiUHJvZ3JhbW1pbmdDaGFsbGVuZ2VSZXBvcnRJZCI6MSwiTmFtZSI6InRlc3Rfc3RyIiwiRHVyYXRpb24iOjAuMDA5MzAyNTUwMDEwMDMzODgzLCJUb3RhbFJ1bnMiOjIsIlRvdGFsRmFpbHMiOjEsIkluY29taW5nVmFsdWVzIjoidGVzdF9maXJzdCA9ICdBZGFtJywgdGVzdF9sYXN0ID0gJ1Rob21wc29uJywgdGVzdF9hZ2UgPSAtMjAsIGV4cGVjdGVkID0geydhZ2UnOiAyMCwgJ2ZpcnN0JzogJ0FkYW0nLCAnbGFzdCc6ICdUaG9tcHNvbid9IiwiQXNzZXJ0aW9uTWVzc2FnZSI6IkFzc2VydGlvbkVycm9yOiBhc3NlcnQgJ0ZpcnN0OiBBZGFtXFwuLi5zb25cXG5BZ2U6IC0yMCcgPT0gJ0ZpcnN0OiBBZGFtXFwuLi5wc29uXFxuQWdlOiAyMCdcbiAgICBGaXJzdDogQWRhbVxuICAgIExhc3Q6IFRob21wc29uXG4gIC0gQWdlOiAyMFxuICArIEFnZTogLTIwXG4gID8gICAgICArIiwiUmVzdWx0IjoxfSx7IklkIjowLCJQcm9ncmFtbWluZ0NoYWxsZW5nZVJlcG9ydElkIjoxLCJOYW1lIjoidGVzdF9wcm9wIiwiRHVyYXRpb24iOjAuMDAwMjEwODAwMDA0NDI0NTI3MywiVG90YWxSdW5zIjoxLCJUb3RhbEZhaWxzIjowLCJJbmNvbWluZ1ZhbHVlcyI6IiIsIkFzc2VydGlvbk1lc3NhZ2UiOiIiLCJSZXN1bHQiOjB9XX19";
 
-        if(!string.IsNullOrEmpty(EncodedReport))
+        if(!string.IsNullOrEmpty(encodedReport))
             try
             {
-                _report = Newtonsoft.Json.JsonConvert.DeserializeObject<ReportParameter>(EncodedReport.Base64Decode());
+                _report = Newtonsoft.Json.JsonConvert.DeserializeObject<ReportParameter>(encodedReport.Base64Decode());
             }
             catch(Exception ex)
             {
