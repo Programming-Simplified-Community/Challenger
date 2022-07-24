@@ -1,0 +1,32 @@
+﻿@page "/"
+@using Challenger.Services
+@inject ChallengeService _challenges
+
+<PageTitle>Index</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Greetings, Challengers!</MudText>
+<MudText Class="mb-8">Welcome to <span class="mud-secondary-text">Programming Simplified</span>'s Challenge Platform!</MudText>
+
+<MudAlert Severity="Severity.Normal">
+    Have you checked out our challenges?
+    <br/>
+
+    @foreach(var challenge in _challengeItems.OrderBy(x=>x.Title))
+    {
+        var href = $"Challenge/{challenge.File}";
+        <MudLink Href="@href" Typo="Typo.body2" Color="Color.Inherit">
+            <b>@challenge.Title</b>
+        </MudLink>
+        <br/>
+    }    
+</MudAlert>
+
+@code {
+    List<ChallengeNavItem> _challengeItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _challengeItems = await _challenges.GetRandomChallenges();
+    }
+}

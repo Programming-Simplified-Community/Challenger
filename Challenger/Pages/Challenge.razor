@@ -1,0 +1,30 @@
+﻿@page "/Challenge/{File}"
+@using Challenger.Services
+@inject ChallengeService _challenges
+@inject IJSRuntime _js
+
+<MudContainer id="ChallengeContent">
+    @if(_contents.HasValue)
+    {
+        @(_contents.Value)
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string File{ get; set; }
+
+    private MarkupString? _contents;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _contents = await _challenges.GetChallengeData(File);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        await _js.InvokeVoidAsync("highlightCode");
+    }
+}

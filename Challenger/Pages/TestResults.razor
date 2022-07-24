@@ -1,0 +1,152 @@
+﻿@page "/TestResults"
+@page "/TestResults/{EncodedReport}"
+@using Challenger.Models
+@using Challenger.Extensions
+
+
+<MudText Typo="Typo.h4">
+    <MudImage Style="border-radius: 50%; width: 64px; height: 64px;" Src="@_report.AvatarUrl"/>
+    <span style="vertical-align: super;">@_report.UserName</span>
+</MudText>
+
+<MudText Typo="Typo.h5">
+    @{
+        string headerText = string.Empty;
+        if(_allPassed)
+        {
+            headerText = "All tests passed! Congratulations!";
+        }
+        else if(_allFailed)
+        {
+            headerText = "Oops, perhaps next time!";
+        }
+        else
+        {
+            headerText = $"{_passing}/{_total} Passed";
+        }
+            @headerText
+    }
+</MudText>
+
+<MudContainer>
+    @foreach(var item in _report.Report.TestResults)
+    {
+        var results = item.GetErrors();
+        var iconClass = item.Result == TestStatus.Pass
+                                ? "fa-check mud-success-text"
+                                : "fa-xmark mud-error-text";
+
+        <MudDivider/>
+
+        <MudContainer Class="mb-6">
+
+            <MudText Typo="Typo.h5">
+                <i class="fa-solid @iconClass"></i>&nbsp;@item.Name
+            </MudText>
+
+             <span><i class="fa-solid fa-stopwatch mud-info-text"></i>&nbsp;@item.Duration seconds</span>
+
+            @if(results.Any())
+            {
+                <MudTable Hover="true" T="@TestResultRow" Elevation="3" Striped="true" Virtualize="true" Items="results">
+                    <HeaderContent>
+                        <MudTh>
+                            Parameters
+                        </MudTh>
+                        <MudTh>
+                            Assertion Message
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate >
+                        <MudTd>
+                            @context.Parameters
+                        </MudTd>
+                        <MudTd>
+                            @context.Errors
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>    
+            }
+        </MudContainer>
+    }
+</MudContainer>
+
+
+
+@code {
+
+    [Parameter]
+    public string? EncodedReport { get; set; }
+    private ReportParameter _report;
+    private bool _allPassed;
+    private bool _allFailed;
+
+    private string[] _passingImages =
+    {
+        "https://images.unsplash.com/photo-1498931299472-f7a63a5a1cfa?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1746&q=80",
+        "https://images.unsplash.com/photo-1531686264889-56fdcabd163f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
+        "https://images.unsplash.com/photo-1543718290-a207a786243a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
+        "https://images.unsplash.com/photo-1560986752-2e31d9507413?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"    
+    };
+
+    private string[] _failedImages =
+    {
+        "https://images.unsplash.com/photo-1606235729097-f7b9460abcad?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1548&q=80",
+        "https://images.unsplash.com/photo-1633078654544-61b3455b9161?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1490&q=80",
+
+    };
+
+    private string[] _inspiration =
+    {
+        "https://images.unsplash.com/photo-1618404526182-d4c3c2af8048?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1548&q=80",
+        "https://images.unsplash.com/photo-1621410153570-9c55676b0157?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1548&q=80",
+        "https://images.unsplash.com/photo-1494178270175-e96de2971df9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1980&q=80",
+        "https://images.unsplash.com/photo-1611137577061-ad9154062d6c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1548&q=80",
+        "https://images.unsplash.com/photo-1618305520402-84d6726e3123?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1548&q=80"
+    };
+
+    private string _imageToUse = string.Empty;
+    private int _passing = 0;
+    private int _total = 0;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        EncodedReport ??= "eyJVc2VyTmFtZSI6IkJhZGdlciAyLTMiLCJBdmF0YXJVcmwiOiJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzExNzc0NDAzNDI0NzczNzM1My8yYzNhZTAyZjJiZWE4Yzg1MWVmZWIxNzNmMTg4ZWM5Ny5wbmc/c2l6ZT00MDk2IiwiUmVwb3J0Ijp7IklkIjowLCJQcm9ncmFtbWluZ0NoYWxsZW5nZUlkIjoxLCJQcm9ncmFtbWluZ0NoYWxsZW5nZSI6bnVsbCwiVXNlcklkIjpudWxsLCJVc2VyIjpudWxsLCJQb2ludHMiOjAsIkR1cmF0aW9uIjowLjAsIlRlc3RSZXN1bHRzIjpbeyJJZCI6MCwiUHJvZ3JhbW1pbmdDaGFsbGVuZ2VSZXBvcnRJZCI6MSwiTmFtZSI6InRlc3RfY29uc3RydWN0b3IiLCJEdXJhdGlvbiI6MC4wMDAyMjgxOTk5OTEzOTc1NTk2NCwiVG90YWxSdW5zIjoyLCJUb3RhbEZhaWxzIjoxLCJJbmNvbWluZ1ZhbHVlcyI6InRlc3RfZmlyc3QgPSAnQWRhbScsIHRlc3RfbGFzdCA9ICdUaG9tcHNvbicsIHRlc3RfYWdlID0gLTIwLCBleHBlY3RlZCA9IHsnYWdlJzogMjAsICdmaXJzdCc6ICdBZGFtJywgJ2xhc3QnOiAnVGhvbXBzb24nfSIsIkFzc2VydGlvbk1lc3NhZ2UiOiJhc3NlcnQgLTIwID09IDIwXG4gKyAgd2hlcmUgLTIwID0gPG1haW4uUGVyc29uIG9iamVjdCBhdCAweDAwMDAwMjRFOUY2MDAxMzA+LmFnZSIsIlJlc3VsdCI6MX0seyJJZCI6MCwiUHJvZ3JhbW1pbmdDaGFsbGVuZ2VSZXBvcnRJZCI6MSwiTmFtZSI6InRlc3Rfc3RyIiwiRHVyYXRpb24iOjAuMDA5MzAyNTUwMDEwMDMzODgzLCJUb3RhbFJ1bnMiOjIsIlRvdGFsRmFpbHMiOjEsIkluY29taW5nVmFsdWVzIjoidGVzdF9maXJzdCA9ICdBZGFtJywgdGVzdF9sYXN0ID0gJ1Rob21wc29uJywgdGVzdF9hZ2UgPSAtMjAsIGV4cGVjdGVkID0geydhZ2UnOiAyMCwgJ2ZpcnN0JzogJ0FkYW0nLCAnbGFzdCc6ICdUaG9tcHNvbid9IiwiQXNzZXJ0aW9uTWVzc2FnZSI6IkFzc2VydGlvbkVycm9yOiBhc3NlcnQgJ0ZpcnN0OiBBZGFtXFwuLi5zb25cXG5BZ2U6IC0yMCcgPT0gJ0ZpcnN0OiBBZGFtXFwuLi5wc29uXFxuQWdlOiAyMCdcbiAgICBGaXJzdDogQWRhbVxuICAgIExhc3Q6IFRob21wc29uXG4gIC0gQWdlOiAyMFxuICArIEFnZTogLTIwXG4gID8gICAgICArIiwiUmVzdWx0IjoxfSx7IklkIjowLCJQcm9ncmFtbWluZ0NoYWxsZW5nZVJlcG9ydElkIjoxLCJOYW1lIjoidGVzdF9wcm9wIiwiRHVyYXRpb24iOjAuMDAwMjEwODAwMDA0NDI0NTI3MywiVG90YWxSdW5zIjoxLCJUb3RhbEZhaWxzIjowLCJJbmNvbWluZ1ZhbHVlcyI6IiIsIkFzc2VydGlvbk1lc3NhZ2UiOiIiLCJSZXN1bHQiOjB9XX19";
+
+        if(!string.IsNullOrEmpty(EncodedReport))
+            try
+            {
+                _report = Newtonsoft.Json.JsonConvert.DeserializeObject<ReportParameter>(EncodedReport.Base64Decode());
+            }
+            catch(Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+            }
+
+        _report ??= new()
+        {
+            UserName = "Unknown",
+            Report = new(),
+            AvatarUrl = string.Empty
+        };
+
+        int passing = _report.Report.TestResults.Count(x => x.Result == TestStatus.Pass);
+        int failed = _report.Report.TestResults.Count(x => x.Result == TestStatus.Fail);
+
+        _allPassed = _report.Report.TestResults.Count > 0 && passing == _report.Report.TestResults.Count;
+        _allFailed = _report.Report.TestResults.Count > 0 && failed == _report.Report.TestResults.Count;
+        _total = _report.Report.TestResults.Count;
+        _passing = passing;
+
+        var random = new Random();
+        if (_allPassed)
+            _imageToUse = _passingImages[random.Next(0, _passingImages.Length)];
+        else if (_allFailed)
+            _imageToUse = _failedImages[random.Next(0, _failedImages.Length)];
+        else
+            _imageToUse = _inspiration[random.Next(0, _inspiration.Length)];
+    }
+
+}

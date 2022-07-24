@@ -1,0 +1,27 @@
+﻿@page "/Challenges"
+@using Challenger.Services
+@inject ChallengeService _challenges
+
+@foreach(var category in _items.GroupBy(x=>x.Category))
+{
+    <MudText Typo="Typo.h3">@category.Key</MudText>
+
+    foreach(var item in category.OrderBy(x=>x.Title))
+    {
+        string link = $"challenge/{item.File}";
+        <MudLink Color="Color.Inherit" Href="@link">@item.Title</MudLink>
+        <br/>
+    }
+    <br/>
+    <MudDivider/>
+}
+
+@code {
+    private List<ChallengeNavItem> _items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _items = await _challenges.GetChallenges();
+    }
+}
