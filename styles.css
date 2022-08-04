@@ -1,0 +1,15 @@
+﻿#ChallengeContent h1,
+#ChallengeContent h2,
+#ChallengeContent h3,
+#ChallengeContent h4,
+#ChallengeContent h5,
+#ChallengeContent h6,
+#ChallengeContent h7,
+#ChallengeContent h8 {
+    margin-top: 1.25em !important;
+}
+
+#ChallengeContent pre {
+    margin-top: 1em !important;
+    margin-bottom: 1em !important;
+}
