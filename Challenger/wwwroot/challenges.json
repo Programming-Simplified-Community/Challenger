@@ -13,5 +13,10 @@
     "File": "oop-inv-class.md",
     "Title": "OOP Inventory Class",
     "Category": "OOP"
-  }
+  },
+   {
+    "File": "event-player.md",
+     "Title": "Events (Player)",
+     "Category": "Events"
+   }
 ]
